@@ -7,6 +7,8 @@ If you’re looking for a hosted desktop recording API, consider checking out [R
 
 # Natively — AI Interview Copilot & Meeting Assistant
 
+> **Unofficial personal-use fork.** This project is based on Natively, originally developed by Natively AI Private Limited. This fork adds [personal Markdown context modes](PERSONAL_MARKDOWN_MODES.md). Upstream license, attribution, and premium checks are retained.
+
 **The best free alternative to Cluely, Final Round AI, LockedIn AI, and Interview Coder.**
 <br/>
 **Same UI as Cluely. More features. $0 for personal/non-commercial use. Source available. No data breaches.**

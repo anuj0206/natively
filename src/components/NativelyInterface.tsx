@@ -1,4 +1,5 @@
 import { animate, AnimatePresence, motion, motionValue, useMotionValue, useTransform } from 'framer-motion';
+import { MarkdownModes } from './MarkdownModes';
 import {
   ArrowRight,
   ArrowDown,
@@ -11444,6 +11445,7 @@ Provide only the answer, nothing else.`;
               }}
             >
               {isGlassTheme && <GlassEffectLayer parentRef={shellRef} cornerRadius={24} />}
+              <div className="relative z-10"><MarkdownModes compact /></div>
 
               {/* Chrome that comes and goes folds open and shut (ChromeFold)
                   instead of jumping the card and the window. */}

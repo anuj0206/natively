@@ -1,0 +1,31 @@
+name: Personal Markdown modes
+
+on:
+  push:
+    paths:
+      - 'src/lib/markdownModes*'
+      - 'src/lib/__tests__/markdownModes.test.mjs'
+      - 'src/components/MarkdownModes.tsx'
+      - '.github/workflows/personal-markdown-modes.yml'
+  pull_request:
+    paths:
+      - 'src/lib/markdownModes*'
+      - 'src/lib/__tests__/markdownModes.test.mjs'
+      - 'src/components/MarkdownModes.tsx'
+      - '.github/workflows/personal-markdown-modes.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  context-presets:
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node --test src/lib/__tests__/markdownModes.test.mjs
