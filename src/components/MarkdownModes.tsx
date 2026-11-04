@@ -15,6 +15,7 @@ export function MarkdownModes({ compact = false }: { compact?: boolean }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
+  const [managerOpen, setManagerOpen] = useState(false);
   const refreshGeneration = useRef(0);
 
   async function refresh() {
@@ -71,8 +72,11 @@ export function MarkdownModes({ compact = false }: { compact?: boolean }) {
           <option value="">None / restore original context</option>
           {state.presets.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
         </select>
+        {compact && <button type="button" className={button + ' shrink-0'} aria-expanded={managerOpen}
+          onClick={() => setManagerOpen(open => !open)}>{managerOpen ? 'Close editor' : 'Add / edit'}</button>}
         {!compact && <button className={button} disabled={busy || !!draft} onClick={() => setDraft({ id: crypto.randomUUID(), name: '', content: '', fileName: '' })}>New mode</button>}
       </div>
+      {compact && managerOpen && <div className="mt-2 max-h-[50vh] overflow-y-auto rounded-lg border border-current/20"><MarkdownModes /></div>}
       {!compact && !draft && state.presets.length === 0 && <p className="text-sm opacity-60">No Markdown modes yet. Create one and attach a file.</p>}
       {!compact && !draft && state.presets.map(p => <div key={p.id} className="flex items-center gap-3 rounded-xl border border-current/15 p-3">
         <div className="min-w-0 flex-1"><div className="truncate font-medium">{p.name}</div><div className="truncate text-xs opacity-60">{p.fileName || 'Written context'} · {p.content.length.toLocaleString()} characters</div></div>
@@ -84,7 +88,12 @@ export function MarkdownModes({ compact = false }: { compact?: boolean }) {
       </div>)}
       {!compact && draft && <form className="space-y-3" onSubmit={e => {
         e.preventDefault();
-        void run(async () => { saveMarkdownMode(localStorage, draft); setDraft(null); setNotice('Mode saved. Choose Use to activate it.'); });
+        void run(async () => {
+          saveMarkdownMode(localStorage, draft);
+          await applyMarkdownMode(localStorage, api(), draft.id);
+          setDraft(null);
+          setNotice('Mode saved and active. Its context will be used for your next answer.');
+        });
       }}>
         <label className="block text-sm">Mode name<input required autoFocus maxLength={100} className={field + ' mt-1'} value={draft.name} disabled={busy} onChange={e => setDraft({ ...draft, name: e.target.value })} /></label>
         <label className="block text-sm">Attach Markdown file
@@ -96,7 +105,7 @@ export function MarkdownModes({ compact = false }: { compact?: boolean }) {
         {draft.fileName && <p className="text-xs opacity-60">Attached copy: {draft.fileName}. Reattach to import later file changes.</p>}
         <label className="block text-sm">Context<textarea rows={9} className={field + ' mt-1 resize-y'} value={draft.content} disabled={busy} onChange={e => setDraft({ ...draft, content: e.target.value })} /></label>
         <p className="text-xs opacity-60">{draft.content.length.toLocaleString()} / {MAX_CONTEXT_CHARS.toLocaleString()} characters. Stored on this device and included in AI requests when selected.</p>
-        <div className="flex gap-2"><button type="submit" className={button} disabled={busy || !draft.name.trim() || !draft.content.trim()}>Save mode</button>
+        <div className="flex gap-2"><button type="submit" className={button} disabled={busy || !draft.name.trim() || !draft.content.trim()}>Save and use</button>
           <button type="button" className={button} disabled={busy} onClick={() => setDraft(null)}>Cancel</button></div>
       </form>}
       {!compact && <p className="text-xs opacity-55">Switching context cancels in-progress answers. Modes persist across restarts. Clear the selection to restore the original General context.</p>}
