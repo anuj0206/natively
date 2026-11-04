@@ -46,6 +46,7 @@ import { PREMIUM_ADS_AVAILABLE } from './premium'
 import { analytics } from "./lib/analytics/analytics.service"
 import { ErrorBoundary } from "./components/ErrorBoundary"
 import ModesSettings from "./components/settings/ModesSettings"
+import { MarkdownModes } from "./components/MarkdownModes"
 import { GenieModal } from "./components/ui/GenieModal"
 import { GENIE_CLOSE_MS } from "./components/onboarding/useGenieCard"
 import { ProfileIntelligenceSettings } from "./components/ProfileIntelligenceSettings"
@@ -1467,6 +1468,9 @@ const App: React.FC = () => {
                       className="h-full w-full"
                     >
                       {activeManagerPanel === 'modes' ? (
+                        <div className="h-full overflow-y-auto">
+                        <div className="flex justify-end px-4 pt-3"><button onClick={closeManagerPanel} aria-label="Close Markdown modes">Close</button></div>
+                        <MarkdownModes />
                         <ModesSettings
                           onClose={closeManagerPanel}
                           isPremium={isPremiumActive}
@@ -1474,6 +1478,7 @@ const App: React.FC = () => {
                           isTrialActive={!!activeTrial}
                           onOpenNativelyAPI={() => openSettingsExclusive('plans')}
                         />
+                        </div>
                       ) : (
                         <ProfileIntelligenceSettings
                           onClose={closeManagerPanel}
