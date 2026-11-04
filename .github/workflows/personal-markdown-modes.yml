@@ -3,12 +3,16 @@ name: Personal Markdown modes
 on:
   push:
     paths:
+      - 'electron/services/markdownFileImport*'
+      - 'electron/services/__tests__/MarkdownFileImport.test.mjs'
       - 'src/lib/markdownModes*'
       - 'src/lib/__tests__/markdownModes.test.mjs'
       - 'src/components/MarkdownModes.tsx'
       - '.github/workflows/personal-markdown-modes.yml'
   pull_request:
     paths:
+      - 'electron/services/markdownFileImport*'
+      - 'electron/services/__tests__/MarkdownFileImport.test.mjs'
       - 'src/lib/markdownModes*'
       - 'src/lib/__tests__/markdownModes.test.mjs'
       - 'src/components/MarkdownModes.tsx'
@@ -28,4 +32,4 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: node --test src/lib/__tests__/markdownModes.test.mjs
+      - run: node --test src/lib/__tests__/markdownModes.test.mjs electron/services/__tests__/MarkdownFileImport.test.mjs

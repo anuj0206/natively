@@ -492,6 +492,7 @@ export interface ElectronAPI {
   onModeChanged: (callback: (data: { id: string | null; name: string | null; fileCount?: number; indexedCount?: number }) => void) => () => void
 
   // Modes
+  markdownModesImportFile: () => Promise<{ success: boolean; cancelled?: boolean; error?: string; name?: string; fileName?: string; content?: string }>
   modesGetAll: () => Promise<Array<{ id: string; name: string; templateType: string; customContext: string; isActive: boolean; createdAt: string; referenceFileCount: number }>>
   modesGetActive: () => Promise<{ id: string; name: string; templateType: string; customContext: string; isActive: boolean; createdAt: string } | null>
   modesCreate: (params: { name: string; templateType: string }) => Promise<{ success: boolean; mode?: any; error?: string }>

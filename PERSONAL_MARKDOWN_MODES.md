@@ -6,6 +6,8 @@ This is an unofficial personal-use modification. The upstream license, branding,
 
 ## Use
 
+**Attach .md file** uses a native Electron file dialog. You can also drag a `.md` file onto the attachment area or paste its text into Context. Restart the desktop app after updating this file-picker feature so the main process and preload bridge reload.
+
 Open **Modes** from the launcher, or choose **Add / edit** beside **MD mode** in the meeting overlay. In **Markdown modes**, choose **New mode**, name it, and attach a UTF-8 `.md` file. Review or edit the imported context, then choose **Save and use** to save and activate it. The live overlay also has an **MD mode** selector for switching saved presets.
 
 The file is imported as a copy, not a live link. Reattach it to import later changes. Files must be at most 32 KB and context must be at most 8,000 characters, matching the upstream General-mode instruction limit. Oversized content is rejected rather than truncated. Up to 50 presets can be saved.

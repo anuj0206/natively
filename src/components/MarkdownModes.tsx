@@ -58,6 +58,18 @@ export function MarkdownModes({ compact = false }: { compact?: boolean }) {
     if (!window.electronAPI) throw new Error('Markdown modes require the desktop app.');
     return window.electronAPI;
   };
+  const importIntoDraft = (imported: { name: string; fileName: string; content: string }) => {
+    setDraft(current => current ? { ...current, ...imported, name: current.name.trim() || imported.name } : current);
+  };
+  const chooseMarkdown = () => void run(async () => {
+    if (!api().markdownModesImportFile) throw new Error('Restart Natively to enable the updated file picker.');
+    const imported = await api().markdownModesImportFile();
+    if (imported.cancelled) return;
+    if (!imported.success || imported.content === undefined || !imported.fileName || !imported.name) {
+      throw new Error(imported.error || 'Could not attach the Markdown file.');
+    }
+    importIntoDraft({ name: imported.name, fileName: imported.fileName, content: imported.content });
+  });
   const field = 'w-full rounded-lg border border-current/20 bg-transparent px-3 py-2 text-sm';
   const button = 'rounded-lg border border-current/20 px-3 py-1.5 text-xs disabled:opacity-40';
 
@@ -96,12 +108,18 @@ export function MarkdownModes({ compact = false }: { compact?: boolean }) {
         });
       }}>
         <label className="block text-sm">Mode name<input required autoFocus maxLength={100} className={field + ' mt-1'} value={draft.name} disabled={busy} onChange={e => setDraft({ ...draft, name: e.target.value })} /></label>
-        <label className="block text-sm">Attach Markdown file
-          <input type="file" accept=".md,text/markdown" disabled={busy} className="mt-1 block w-full text-sm" onChange={e => {
-            const file = e.target.files?.[0]; e.target.value = '';
-            if (file) void run(async () => { const imported = await readMarkdownFile(file); setDraft({ ...draft, ...imported, name: draft.name.trim() || imported.name }); });
-          }} />
-        </label>
+        <div className="rounded-lg border border-dashed border-current/30 p-3" onDragOver={e => { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; }}
+          onDrop={e => {
+            e.preventDefault(); e.stopPropagation();
+            if (busy) return;
+            const files = e.dataTransfer.files;
+            if (files.length !== 1) { setError('Drop one .md file at a time.'); return; }
+            const file = files[0];
+            void run(async () => importIntoDraft(await readMarkdownFile(file)));
+          }}>
+          <button type="button" className={button} disabled={busy} onClick={chooseMarkdown}>Attach .md file</button>
+          <p className="mt-1 text-xs opacity-60">Choose a file, or drag and drop one here. UTF-8 Markdown, up to 32 KB and 8,000 characters.</p>
+        </div>
         {draft.fileName && <p className="text-xs opacity-60">Attached copy: {draft.fileName}. Reattach to import later file changes.</p>}
         <label className="block text-sm">Context<textarea rows={9} className={field + ' mt-1 resize-y'} value={draft.content} disabled={busy} onChange={e => setDraft({ ...draft, content: e.target.value })} /></label>
         <p className="text-xs opacity-60">{draft.content.length.toLocaleString()} / {MAX_CONTEXT_CHARS.toLocaleString()} characters. Stored on this device and included in AI requests when selected.</p>

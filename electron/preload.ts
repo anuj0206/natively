@@ -1348,6 +1348,7 @@ interface ElectronAPI {
       referenceFileCount: number;
     }>
   >;
+  markdownModesImportFile: () => Promise<{ success: boolean; cancelled?: boolean; error?: string; name?: string; fileName?: string; content?: string }>;
   modesGetActive: () => Promise<{
     id: string;
     name: string;
@@ -3584,6 +3585,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   // Modes API
   modesGetAll: () => ipcRenderer.invoke('modes:get-all'),
+  markdownModesImportFile: () => ipcRenderer.invoke('markdown-modes:import-file'),
   modesGetActive: () => ipcRenderer.invoke('modes:get-active'),
   modesCreate: (params: { name: string; templateType: string }) =>
     ipcRenderer.invoke('modes:create', params),

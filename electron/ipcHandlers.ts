@@ -18714,6 +18714,29 @@ export function initializeIpcHandlers(appState: AppState): void {
   // Modes IPC Handlers
   // ==========================================
 
+  let markdownPickerPending = false;
+  safeHandle('markdown-modes:import-file', async (event) => {
+    if (markdownPickerPending) return { success: false, error: 'A Markdown file picker is already open.' };
+    markdownPickerPending = true;
+    try {
+      const { importMarkdownContext } = await import('./services/markdownFileImport.mjs');
+      const parent = BrowserWindow.fromWebContents(event.sender);
+      const options = {
+        title: 'Attach Markdown context',
+        buttonLabel: 'Attach Markdown',
+        properties: ['openFile'] as Array<'openFile'>,
+        filters: [{ name: 'Markdown files', extensions: ['md'] }],
+      };
+      return await importMarkdownContext({
+        pickFile: () => parent && !parent.isDestroyed()
+          ? dialog.showOpenDialog(parent, options)
+          : dialog.showOpenDialog(options),
+      });
+    } catch (error: any) {
+      return { success: false, error: error?.message || 'Could not read the selected Markdown file.' };
+    } finally { markdownPickerPending = false; }
+  });
+
   safeHandle('modes:get-all', async () => {
     try {
       const { ModesManager } = require('./services/ModesManager');
